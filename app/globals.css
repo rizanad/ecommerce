@@ -1,0 +1,19 @@
+
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-[#fafafa] text-slate-900;
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-size: 30px 30px;
+    background-image: radial-gradient(#7c3aed 0.7px, transparent 0.7px);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
