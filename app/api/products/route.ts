@@ -13,7 +13,7 @@ export async function GET(req: Request) {
         where: {
           category: {
             equals: category,
-            mode: "insensitive", // Make it case-insensitive
+            mode: "insensitive", 
           },
         },
         orderBy: { name: "asc" },
