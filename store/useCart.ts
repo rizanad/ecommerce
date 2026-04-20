@@ -22,14 +22,12 @@ export const useCart = create<CartStore>()(
     (set, get) => ({
       cart: [],
       
-// Inside your useCart.ts
 addToCart: (product) => {
   const currentCart = get().cart;
   const existingItem = currentCart.find((item) => item.id === product.id);
 
   if (existingItem) {
     if (product.decrease) {
-      // Decrease logic
       if (existingItem.quantity === 1) {
         set({ cart: currentCart.filter((item) => item.id !== product.id) });
       } else {
@@ -40,7 +38,6 @@ addToCart: (product) => {
         });
       }
     } else {
-      // Increase logic
       set({
         cart: currentCart.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
@@ -48,7 +45,6 @@ addToCart: (product) => {
       });
     }
   } else if (!product.decrease) {
-    // Add new item logic
     set({ cart: [...currentCart, { ...product, quantity: 1 }] });
   }
 },
@@ -61,6 +57,6 @@ addToCart: (product) => {
 
       totalItems: () => get().cart.reduce((acc, item) => acc + item.quantity, 0),
     }),
-    { name: 'orchid-cart-storage' } // This saves the cart to LocalStorage
+    { name: 'orchid-cart-storage' } 
   )
 );

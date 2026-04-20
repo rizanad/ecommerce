@@ -1,5 +1,6 @@
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 const jakarta = Plus_Jakarta_Sans({ 
   subsets: ["latin"],
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${jakarta.className} antialiased`}>
         {children}
+        <Toaster position="top-center"/>
       </body>
     </html>
   );

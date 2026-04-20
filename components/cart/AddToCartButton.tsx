@@ -5,7 +5,7 @@ import { useCart } from "@/store/useCart";
 import { useState, useEffect } from "react";
 
 export default function AddToCartButton({ product }: { product: any }) {
-  const { cart, addToCart, removeFromCart } = useCart();
+  const { cart, addToCart } = useCart();
   const [mounted, setMounted] = useState(false);
   const [showLimitWarning, setShowLimitWarning] = useState(false);
 
@@ -15,6 +15,7 @@ export default function AddToCartButton({ product }: { product: any }) {
   const cartItem = cart.find((item) => item.id === product.id);
   const quantity = cartItem ? cartItem.quantity : 0;
 
+  // Prevent Hydration Mismatch
   useEffect(() => setMounted(true), []);
 
   const handleIncrement = (e: React.MouseEvent) => {
@@ -30,53 +31,50 @@ export default function AddToCartButton({ product }: { product: any }) {
   const handleDecrement = (e: React.MouseEvent) => {
     e.preventDefault();
     if (quantity > 0) {
-      // We need to add a "decreaseQuantity" method to useCart, 
-      // but for now, we'll assume your store handles the logic:
-      // If quantity is 1 and we minus, it removes the item.
-      addToCart({ ...product, decrease: true }); 
+      addToCart({ ...product, decrease: true });
     }
   };
 
-  if (!mounted) return <div className="h-12 w-12 bg-slate-100 rounded-2xl animate-pulse" />;
+  if (!mounted) return <div className="h-11 w-11 bg-slate-100 rounded-xl animate-pulse" />;
 
   return (
     <div className="relative flex flex-col items-end">
-      {/* Limit Warning Tooltip */}
+      {/* Limit Notification */}
       {showLimitWarning && (
-        <div className="absolute -top-10 right-0 bg-rose-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 animate-in fade-in slide-in-from-bottom-2">
-          <AlertCircle size={12} /> MAX LIMIT REACHED
+        <div className="absolute -top-10 right-0 bg-rose-500 text-white text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1 animate-in fade-in slide-in-from-bottom-2 z-10 whitespace-nowrap">
+          <AlertCircle size={12} /> LIMIT REACHED
         </div>
       )}
 
       <div 
-        className={`flex items-center gap-3 h-12 transition-all duration-500 ease-out rounded-2xl p-1.5 ${
-          quantity > 0 ? "bg-violet-600 w-32 shadow-lg shadow-violet-200" : "bg-slate-900 w-12 shadow-slate-200"
+        className={`flex items-center transition-all duration-300 ease-out rounded-xl h-11 ${
+          quantity > 0 ? "bg-slate-900 w-28 px-1" : "bg-slate-900 w-11 justify-center hover:bg-violet-600 shadow-lg shadow-slate-200"
         }`}
       >
         {quantity > 0 ? (
-          <>
+          <div className="flex items-center justify-between w-full">
             <button 
               onClick={handleDecrement}
-              className="h-9 w-9 flex items-center justify-center rounded-xl bg-violet-500 text-white hover:bg-violet-400 transition-colors"
+              className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-white transition-colors"
             >
               <Minus size={14} strokeWidth={3} />
             </button>
             
-            <span className="flex-1 text-center text-sm font-black text-white tabular-nums">
+            <span className="text-xs font-black text-white tabular-nums">
               {quantity}
             </span>
 
             <button 
               onClick={handleIncrement}
-              className="h-9 w-9 flex items-center justify-center rounded-xl bg-violet-500 text-white hover:bg-violet-400 transition-colors"
+              className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-white transition-colors"
             >
               <Plus size={14} strokeWidth={3} />
             </button>
-          </>
+          </div>
         ) : (
           <button 
             onClick={handleIncrement}
-            className="h-full w-full flex items-center justify-center text-white"
+            className="flex h-full w-full items-center justify-center text-white"
           >
             <ShoppingCart size={18} />
           </button>

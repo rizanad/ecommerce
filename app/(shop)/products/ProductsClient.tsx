@@ -3,34 +3,30 @@
 import { useSearchParams } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Star, Filter } from "lucide-react";
+import { Star, Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners"; 
+import AddToCartButton from "../../../components/cart/AddToCartButton"; 
 
-const categories = ["Phones", "Shoes", "Accessories", "Laptop", "Audio", "Gaming"];
+const categories = ["Phones", "Shoes", "Accessories", "Laptop", "Gaming"];
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
-
   const [activeCategory, setActiveCategory] = useState<string | undefined>(
-  searchParams.get('category') || undefined
-);
-
+    searchParams.get('category') || undefined
+  );
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false); 
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true); 
-
       const categoryParam = activeCategory ? `category=${activeCategory}` : '';
       const res = await fetch(`/api/products?${categoryParam}`);
       const data = await res.json();
       setProducts(data);
-
       setLoading(false); 
     };
-
     fetchProducts();
   }, [activeCategory]); 
 
@@ -39,7 +35,7 @@ export default function ProductsPage() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-[#F9F3F0]/30 p-8 md:p-12">
+    <div className="min-h-screen bg-[#F9F3F0]/30 p-8 md:p-12 font-[family-name:var(--font-jakarta)]">
       <div className="max-w-7xl mx-auto">
         <header className="mb-10">
           <div className="flex items-center gap-2 text-violet-600 font-black text-[10px] uppercase tracking-[0.3em] mb-3">
@@ -50,48 +46,44 @@ export default function ProductsPage() {
           </h1>
         </header>
 
+        {/* Categories Navbar */}
         <div className="flex flex-wrap gap-3 mb-12">
           <Link
             href="/products"
             className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
-              !activeCategory
-                ? "bg-black text-white shadow-lg shadow-slate-200"
-                : "bg-white text-slate-500 hover:bg-slate-100 border border-slate-100"
+              !activeCategory ? "bg-black text-white shadow-lg shadow-slate-200" : "bg-white text-slate-500 hover:bg-slate-100 border border-slate-100"
             }`}
           >
             All Items
           </Link>
-
-          {categories.map((cat) => {
-            const isActive = activeCategory?.toLowerCase().trim() === cat.toLowerCase().trim();
-            return (
-              <Link
-                key={cat}
-                href={`/products?category=${cat.toLowerCase().trim()}`}
-                className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
-                  isActive
-                    ? "bg-black text-white shadow-lg shadow-slate-200"
-                    : "bg-white text-slate-500 hover:bg-slate-100 border border-slate-100"
-                }`}
-              >
-                {cat}
-              </Link>
-            );
-          })}
+          {categories.map((cat) => (
+            <Link
+              key={cat}
+              href={`/products?category=${cat.toLowerCase().trim()}`}
+              className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
+                activeCategory?.toLowerCase().trim() === cat.toLowerCase().trim()
+                  ? "bg-black text-white shadow-lg shadow-slate-200"
+                  : "bg-white text-slate-500 hover:bg-slate-100 border border-slate-100"
+              }`}
+            >
+              {cat}
+            </Link>
+          ))}
         </div>
 
         {loading ? ( 
-          <div className="flex justify-center items-center min-h-75">
+          <div className="flex justify-center items-center min-h-[400px]">
             <ClipLoader size={50} color="#6b21a8" /> 
           </div>
         ) : products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {products.map((p: any) => (
+            {products.map((p) => (
               <div
                 key={p.id}
                 className="group flex flex-col rounded-[2.5rem] border border-white bg-white p-4 transition-all duration-500 hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.08)] hover:-translate-y-1"
               >
-                <div className="relative aspect-square bg-[#F6F7FB] rounded-4xl overflow-hidden mb-6">
+                {/* Product Image */}
+                <div className="relative aspect-square bg-[#F6F7FB] rounded-[2rem] overflow-hidden mb-6">
                   {p.imageUrl ? (
                     <Image
                       src={p.imageUrl}
@@ -101,14 +93,13 @@ export default function ProductsPage() {
                       className="object-contain p-8 group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-zinc-300 italic text-xs">
-                      No Image Available
-                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center text-zinc-300 italic text-xs">No Image</div>
                   )}
                 </div>
 
+                {/* Content */}
                 <div className="px-2 pb-2 grow flex flex-col">
-                  <h2 className="font-bold text-slate-900 text-lg mb-1 group-hover:text-violet-600 transition-colors">
+                  <h2 className="font-bold text-slate-900 text-lg mb-1 group-hover:text-violet-600 transition-colors line-clamp-1">
                     {p.name}
                   </h2>
 
@@ -120,10 +111,12 @@ export default function ProductsPage() {
                   </div>
 
                   <div className="mt-auto flex items-center justify-between">
-                    <span className="text-xl font-black text-slate-900">Rs.{p.price}</span>
-                    <button className="h-11 w-11 bg-slate-900 text-white rounded-xl flex items-center justify-center hover:bg-violet-600 transition-all duration-300 shadow-lg shadow-slate-200">
-                      <ShoppingCart className="h-4 w-4" />
-                    </button>
+                    <span className="text-xl font-black text-slate-900 tracking-tight">
+                      Rs.{p.price}
+                    </span>
+                    
+                 
+                    <AddToCartButton product={p} />
                   </div>
                 </div>
               </div>
@@ -131,10 +124,7 @@ export default function ProductsPage() {
           </div>
         ) : (
           <div className="text-center py-24 bg-white rounded-[3rem] border border-dashed border-slate-200">
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No products found in this category.</p>
-            <Link href="/products" className="text-violet-600 font-black text-xs uppercase mt-4 inline-block hover:underline">
-              Clear Filters
-            </Link>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No products found.</p>
           </div>
         )}
       </div>

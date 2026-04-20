@@ -88,7 +88,7 @@ export default function Navbar() {
           </Link>
 
           <Link 
-            href="/register" 
+            href="/signup" 
             className="hidden items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs uppercase tracking-tighter hover:bg-violet-600 transition-all active:scale-95 md:flex"
           >
             <UserPlus className="h-4 w-4" />

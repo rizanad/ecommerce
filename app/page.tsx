@@ -112,15 +112,16 @@ export default async function HomePage() {
                     {[1,2,3,4,5].map(s => <Star key={s} size={10} className="fill-yellow-400 text-yellow-400" />)}
                   </div>
                   
-                  <div className="mt-auto flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="text-xl font-black text-slate-900">Rs.{p.price}</span>
-                    </div>
-                    <div className="h-12 w-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-violet-600 transition-all duration-300 shadow-lg">
-                      {/* <ShoppingCart size={18} /> */}
-                      <AddToCartButton product={p}/>
-                    </div>
-                  </div>
+                 <div className="mt-auto flex items-center justify-between">
+  <div className="flex flex-col">
+    <span className="text-xl font-black text-slate-900 tracking-tight">
+      Rs.{p.price}
+    </span>
+  </div>
+  
+  {/* No more wrapper div here! Let the component handle it. */}
+  <AddToCartButton product={p} />
+</div>
                 </div>
               </div>
             ))}
