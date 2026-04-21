@@ -28,16 +28,14 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    setMounted(true);
-    // Pre-fill data if user is logged in
-    if (session?.user) {
-      setFormData(prev => ({
-        ...prev,
-        fullName: session.user.name || "",
-        email: session.user.email || ""
-      }));
-    }
-  }, [session]);
+  if (status === "authenticated" && session?.user) {
+    setFormData(prev => ({
+      ...prev,
+      fullName: session.user?.name || "",
+      email: session.user?.email || ""
+    }));
+  }
+}, [status, session]);
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
