@@ -11,15 +11,25 @@ export default function AddToCartButton({ product }: { product: any }) {
 
   const MAX_LIMIT = 10;
 
-  // Sync with store
-  const cartItem = cart.find((item) => item.id === product.id);
-  const quantity = cartItem ? cartItem.quantity : 0;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  // Prevent Hydration Mismatch
-  useEffect(() => setMounted(true), []);
+  // Guard Clause: If product is missing, render nothing and STOP execution
+  if (!product) return null;
+
+  // Hydration Guard: Don't run store logic until client-side
+  if (!mounted) {
+    return <div className="h-11 w-11 bg-slate-100 rounded-xl animate-pulse" />;
+  }
+
+  // Safe logic execution
+  const cartItem = cart?.find((item) => item && item.id === product.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
 
   const handleIncrement = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (quantity < MAX_LIMIT) {
       addToCart(product);
     } else {
@@ -30,16 +40,14 @@ export default function AddToCartButton({ product }: { product: any }) {
 
   const handleDecrement = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (quantity > 0) {
       addToCart({ ...product, decrease: true });
     }
   };
 
-  if (!mounted) return <div className="h-11 w-11 bg-slate-100 rounded-xl animate-pulse" />;
-
   return (
     <div className="relative flex flex-col items-end">
-      {/* Limit Notification */}
       {showLimitWarning && (
         <div className="absolute -top-10 right-0 bg-rose-500 text-white text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1 animate-in fade-in slide-in-from-bottom-2 z-10 whitespace-nowrap">
           <AlertCircle size={12} /> LIMIT REACHED
@@ -47,8 +55,10 @@ export default function AddToCartButton({ product }: { product: any }) {
       )}
 
       <div 
-        className={`flex items-center transition-all duration-300 ease-out rounded-xl h-11 ${
-          quantity > 0 ? "bg-slate-900 w-28 px-1" : "bg-slate-900 w-11 justify-center hover:bg-violet-600 shadow-lg shadow-slate-200"
+        className={`flex items-center transition-all duration-300 ease-out rounded-xl h-11 shadow-xl ${
+          quantity > 0 
+            ? "bg-slate-900 w-28 px-1 opacity-100 translate-y-0" 
+            : "bg-slate-900 w-11 justify-center hover:bg-violet-600 sm:opacity-0 sm:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0"
         }`}
       >
         {quantity > 0 ? (
