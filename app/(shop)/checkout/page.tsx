@@ -27,15 +27,18 @@ export default function CheckoutPage() {
     cvc: ""
   });
 
+  // Handle Mounting and Session Data Pre-fill
   useEffect(() => {
-  if (status === "authenticated" && session?.user) {
-    setFormData(prev => ({
-      ...prev,
-      fullName: session.user?.name || "",
-      email: session.user?.email || ""
-    }));
-  }
-}, [status, session]);
+    setMounted(true); // FIX: Ensures the component renders after hydration
+
+    if (status === "authenticated" && session?.user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: session.user?.name || "",
+        email: session.user?.email || ""
+      }));
+    }
+  }, [status, session]);
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -71,8 +74,17 @@ export default function CheckoutPage() {
     }, 2500);
   };
 
-  if (!mounted) return null;
+  // Production Loading State: Prevents blank screens and hydration flickering
+  if (!mounted || status === "loading") {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+        <Loader2 className="animate-spin text-violet-600 mb-4" size={40} />
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Securing Session...</p>
+      </div>
+    );
+  }
 
+  // Success Step (Step 3)
   if (step === 3) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in duration-500">
@@ -102,13 +114,14 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <Link href="/products" className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-violet-600 transition-all">
+        <Link href="/" className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-violet-600 transition-all">
           Back to Shop
         </Link>
       </div>
     );
   }
 
+  // Main Checkout Layout
   return (
     <div className="min-h-screen bg-slate-50 py-12 md:py-20">
       <div className="max-w-[1100px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -118,6 +131,7 @@ export default function CheckoutPage() {
             <ArrowLeft size={14} /> Review Bag
           </Link>
 
+          {/* Step 1: Shipping */}
           <section className={`bg-white rounded-[2rem] p-8 border transition-all duration-500 ${step === 1 ? "border-violet-600 shadow-xl shadow-violet-100" : "border-slate-100 opacity-60"}`}>
             <div className="flex items-center gap-4 mb-8">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-black ${step === 1 ? "bg-violet-600 text-white" : "bg-emerald-500 text-white"}`}>
@@ -166,6 +180,7 @@ export default function CheckoutPage() {
             )}
           </section>
 
+          {/* Step 2: Payment */}
           <section className={`bg-white rounded-[2rem] p-8 border transition-all duration-500 ${step === 2 ? "border-violet-600 shadow-xl shadow-violet-100" : "border-slate-100 opacity-60"}`}>
             <div className="flex items-center gap-4 mb-8">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-black ${step === 2 ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-400"}`}>
@@ -204,6 +219,7 @@ export default function CheckoutPage() {
           </section>
         </div>
 
+        {/* Sidebar Summary */}
         <div className="lg:col-span-5 sticky top-24">
           <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100">
             <h3 className="font-black text-slate-900 mb-6 uppercase text-[10px] tracking-widest flex items-center gap-2">
