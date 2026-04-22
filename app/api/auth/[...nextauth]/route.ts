@@ -23,7 +23,6 @@ export const authOptions: AuthOptions = {
           where: { email: credentials.email },
         });
 
-        // Check if user exists and has a password (some might be OAuth users)
         if (!user || !user.password) {
           throw new Error("No user found with this email");
         }
@@ -37,7 +36,11 @@ export const authOptions: AuthOptions = {
           throw new Error("Invalid password");
         }
 
-        return user;
+        return {
+          id: user.id.toString(),
+          email: user.email,
+          name: user.name,
+        };
       },
     }),
   ],
@@ -48,13 +51,20 @@ export const authOptions: AuthOptions = {
     strategy: "jwt", 
   },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
+    },
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token.sub) {
         session.user.id = token.sub;
       }
       return session;
     },
   },
+  debug: process.env.NODE_ENV === "development", 
   secret: process.env.NEXTAUTH_SECRET,
 };
 
