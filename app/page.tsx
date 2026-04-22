@@ -21,7 +21,7 @@ const categories = [
 ];
 
 export default async function HomePage() {
-  let products = [];
+  let products:any[] = [];
   try {
     products = await db.product.findMany({ take: 12, orderBy: { createdAt: 'desc' } });
   } catch (e) {
